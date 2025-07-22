@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink,useNavigate  } from 'react-router-dom';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-
+ const navigate = useNavigate();
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   };
@@ -23,11 +23,13 @@ const Navbar = () => {
         </a>
         
         <div className="flex space-x-3 md:order-2 md:space-x-0 rtl:space-x-reverse">
-          <button 
+          <button onClick={()=>{
+            navigate("/login");
+          }}
             type="button" 
             className="px-4 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300"
           >
-            Get started
+            Login
           </button>
           
           <button 
