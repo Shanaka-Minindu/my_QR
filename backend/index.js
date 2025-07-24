@@ -7,7 +7,7 @@ import bcrypt from "bcrypt";
 const app = express();
 
 app.use(bodyParser.urlencoded());
-const port = 3000;
+const port = 3001;
 const saltRounds = 10;
 env.config();
 
@@ -23,7 +23,7 @@ const db = new pg.Client({
 db.connect();
 
 app.get("/", (req, res) => {
-  res.send("Hello World!");
+  console.log("Hello World!");
 });
 
 app.post("/register", async (req, res) => {

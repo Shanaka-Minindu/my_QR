@@ -18,13 +18,42 @@ const Login = () => {
     });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-    // Add your login logic here
-    console.log('Login form submitted:', formData);
-    setTimeout(() => setIsLoading(false), 1500);
-  };
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  setIsLoading(true);
+  setErrors({});
+
+  try {
+    const response = await fetch("http://localhost:3001/login", {
+      method: "POST",
+      body: JSON.stringify(formData),
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      credentials: 'include' // If using sessions/cookies
+    });
+
+    // Handle HTTP errors
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log("Login success:", data);
+    // Handle successful login here
+
+  } catch (error) {
+    console.error("Login error:", error);
+    setErrors({
+      form: error.message.includes('Failed to fetch') 
+        ? 'Cannot connect to server. Is the backend running?' 
+        : error.message
+    });
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   const handleGoogleLogin = () => {
     // Implement Google OAuth logic here
@@ -114,10 +143,11 @@ const Login = () => {
                 </label>
               </div>
             </div>
-
+            
             <button
               type="submit"
               disabled={isLoading}
+              
               className={`w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium rounded-lg shadow-md transition-all duration-300 ${isLoading ? 'opacity-80 cursor-not-allowed' : 'hover:shadow-lg'}`}
             >
               {isLoading ? (
