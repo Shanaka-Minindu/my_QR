@@ -52,6 +52,7 @@ function QrMainContainer() {
   return (
     <>
   <div className="py-5 bg-blue-500 lg:p-10 md:py-10">
+  <title>Simple QR</title>
     <div className="flex items-center justify-center px-4 sm:px-0">
       {/* Changed to h-auto and min-h-0 for mobile */}
       <div className="w-screen h-auto min-h-0 p-8 sm:h-[450px] md:w-[700px] lg:w-[900px] lg:h-[450px] rounded-lg bg-white justify-center sm:flex items-center">

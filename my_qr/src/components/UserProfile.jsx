@@ -1,0 +1,335 @@
+import { useState, useEffect } from 'react';
+import { FiEdit, FiSave, FiX, FiUser, FiExternalLink } from 'react-icons/fi';
+
+const UserProfile = () => {
+  // Sample user data - replace with actual data from your auth context
+  const sampleUser = {
+    name: 'John Doe',
+    email: 'john@example.com',
+    subscription: 'pro',
+    createdAt: '2023-05-15'
+  };
+
+  const [editMode, setEditMode] = useState(false);
+  const [profileData, setProfileData] = useState({
+    name: '',
+    password: '',
+    newPassword: '',
+    confirmPassword: ''
+  });
+  const [qrCodes, setQrCodes] = useState([]);
+  const [editingQr, setEditingQr] = useState(null);
+  const [newUrl, setNewUrl] = useState('');
+
+  // Subscription packages with display names and colors
+  const subscriptionPackages = {
+    free: { name: 'Free', color: 'bg-gray-200 text-gray-800' },
+    basic: { name: 'Package 1', color: 'bg-blue-100 text-blue-800' },
+    pro: { name: 'Package 2', color: 'bg-purple-100 text-purple-800' },
+    enterprise: { name: 'Package 3', color: 'bg-green-100 text-green-800' }
+  };
+
+  useEffect(() => {
+    // Initialize with sample user data
+    setProfileData({
+      name: sampleUser.name,
+      password: '',
+      newPassword: '',
+      confirmPassword: ''
+    });
+
+    // Sample QR code data - replace with actual API call
+    const sampleQrCodes = [
+      { 
+        id: 1, 
+        url: 'https://example.com/products/awesome-product', 
+        scanCount: 42, 
+        package: 'free', 
+        image: 'https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https://example.com/products/awesome-product' 
+      },
+      { 
+        id: 2, 
+        url: 'https://example.com/special-offer', 
+        scanCount: 128, 
+        package: 'pro', 
+        image: 'https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https://example.com/special-offer' 
+      },
+      { 
+        id: 3, 
+        url: 'https://example.com/contact-us', 
+        scanCount: 15, 
+        package: 'basic', 
+        image: 'https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https://example.com/contact-us' 
+      },
+    ];
+    setQrCodes(sampleQrCodes);
+  }, []);
+
+  const handleProfileChange = (e) => {
+    const { name, value } = e.target;
+    setProfileData({
+      ...profileData,
+      [name]: value
+    });
+  };
+
+  const handleSaveProfile = () => {
+    // Validate passwords if changing
+    if (profileData.newPassword && profileData.newPassword !== profileData.confirmPassword) {
+      alert("New passwords don't match!");
+      return;
+    }
+
+    // In a real app, you would call updateUser from useAuth here
+    console.log('Profile updated:', {
+      name: profileData.name,
+      newPassword: profileData.newPassword || undefined
+    });
+    
+    setEditMode(false);
+  };
+
+  const handleEditQr = (qr) => {
+    setEditingQr(qr);
+    setNewUrl(qr.url);
+  };
+
+  const handleSaveQrUrl = () => {
+    // Update the QR code URL in the local state
+    const updatedQrCodes = qrCodes.map(qr => 
+      qr.id === editingQr.id ? { ...qr, url: newUrl } : qr
+    );
+    setQrCodes(updatedQrCodes);
+    setEditingQr(null);
+    
+    // In a real app, you would call an API to save this change
+    console.log('Updated QR URL:', { id: editingQr.id, newUrl });
+  };
+
+  return (
+    <div className="max-w-6xl p-6 mx-auto">
+      {/* Profile Header */}
+      <div className="flex flex-col items-start justify-between mb-8 md:flex-row md:items-center">
+        <div className="flex items-center mb-4 md:mb-0">
+          <div className="flex items-center justify-center w-16 h-16 mr-4 bg-blue-100 rounded-full">
+            <FiUser className="text-2xl text-blue-600" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-800">{sampleUser.name}</h1>
+            <p className="text-gray-600">{sampleUser.email}</p>
+            <p className="text-sm text-gray-500">Member since: {new Date(sampleUser.createdAt).toLocaleDateString()}</p>
+          </div>
+        </div>
+        
+        <div className="flex items-center space-x-4">
+          <div className={`px-4 py-2 rounded-full text-sm font-medium ${
+            subscriptionPackages[sampleUser.subscription].color
+          }`}>
+            {subscriptionPackages[sampleUser.subscription].name}
+          </div>
+          
+          <button 
+            onClick={() => setEditMode(!editMode)}
+            className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50"
+          >
+            <FiEdit className="mr-2" />
+            {editMode ? 'Cancel' : 'Edit Profile'}
+          </button>
+        </div>
+      </div>
+
+      {/* Edit Profile Section */}
+      {editMode && (
+        <div className="p-6 mb-8 bg-white shadow-md rounded-xl">
+          <h2 className="mb-4 text-xl font-semibold text-gray-800">Edit Profile</h2>
+          
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <div>
+              <label className="block mb-1 text-sm font-medium text-gray-700">Name</label>
+              <input
+                type="text"
+                name="name"
+                value={profileData.name}
+                onChange={handleProfileChange}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+            
+            <div>
+              <label className="block mb-1 text-sm font-medium text-gray-700">Email</label>
+              <input
+                type="email"
+                value={sampleUser.email}
+                disabled
+                className="w-full px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg cursor-not-allowed"
+              />
+              <p className="mt-1 text-xs text-gray-500">Email cannot be changed</p>
+            </div>
+            
+            <div>
+              <label className="block mb-1 text-sm font-medium text-gray-700">Current Password</label>
+              <input
+                type="password"
+                name="password"
+                value={profileData.password}
+                onChange={handleProfileChange}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Leave blank to keep current"
+              />
+            </div>
+            
+            <div>
+              <label className="block mb-1 text-sm font-medium text-gray-700">New Password</label>
+              <input
+                type="password"
+                name="newPassword"
+                value={profileData.newPassword}
+                onChange={handleProfileChange}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Leave blank to keep current"
+              />
+            </div>
+            
+            {profileData.newPassword && (
+              <div className="md:col-span-2">
+                <label className="block mb-1 text-sm font-medium text-gray-700">Confirm New Password</label>
+                <input
+                  type="password"
+                  name="confirmPassword"
+                  value={profileData.confirmPassword}
+                  onChange={handleProfileChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                />
+                {profileData.newPassword !== profileData.confirmPassword && (
+                  <p className="mt-1 text-sm text-red-600">Passwords don't match</p>
+                )}
+              </div>
+            )}
+          </div>
+          
+          <div className="flex justify-end mt-6 space-x-3">
+            <button
+              onClick={() => setEditMode(false)}
+              className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleSaveProfile}
+              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700"
+            >
+              Save Changes
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* QR Codes Table */}
+      <div className="p-6 bg-white shadow-md rounded-xl">
+        <h2 className="mb-4 text-xl font-semibold text-gray-800">Your QR Codes</h2>
+        
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                  QR
+                </th>
+                <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                  URL
+                </th>
+                <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                  Scan Count
+                </th>
+                <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                  Package
+                </th>
+                <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {qrCodes.map((qr) => (
+                <tr key={qr.id}>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <img src={qr.image} alt="QR Code" className="w-10 h-10" />
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">
+                    <a href={qr.url} target="_blank" rel="noopener noreferrer" className="flex items-center text-blue-600 hover:text-blue-800">
+                      {qr.url.length > 30 ? `${qr.url.substring(0, 30)}...` : qr.url}
+                      <FiExternalLink className="ml-1" />
+                    </a>
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
+                    {qr.scanCount.toLocaleString()}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      subscriptionPackages[qr.package].color
+                    }`}>
+                      {subscriptionPackages[qr.package].name}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-sm font-medium whitespace-nowrap">
+                    <button
+                      onClick={() => handleEditQr(qr)}
+                      className="text-blue-600 hover:text-blue-900"
+                    >
+                      <FiEdit />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Edit QR URL Modal */}
+      {editingQr && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
+          <div className="w-full max-w-md p-6 bg-white shadow-xl rounded-xl">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-medium text-gray-900">Edit QR Code URL</h3>
+              <button
+                onClick={() => setEditingQr(null)}
+                className="text-gray-400 hover:text-gray-500"
+              >
+                <FiX className="w-6 h-6" />
+              </button>
+            </div>
+            
+            <div className="mb-4">
+              <label className="block mb-1 text-sm font-medium text-gray-700">New URL</label>
+              <input
+                type="url"
+                value={newUrl}
+                onChange={(e) => setNewUrl(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                placeholder="https://example.com"
+              />
+            </div>
+            
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={() => setEditingQr(null)}
+                className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSaveQrUrl}
+                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default UserProfile;

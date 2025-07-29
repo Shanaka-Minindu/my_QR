@@ -416,6 +416,7 @@ const QrFrame = () => {
 
   return (
     <div className="container p-4 mx-auto">
+    <title>QR Frames</title>
       <h2 className="mb-6 text-2xl font-bold text-center">QR Code Frame Composer</h2>
 
       {/* Frame Selection with Filters */}

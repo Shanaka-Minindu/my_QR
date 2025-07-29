@@ -1,7 +1,12 @@
-import { useState } from 'react';
+import { useState, use } from 'react';
 import { NavLink,useNavigate  } from 'react-router-dom';
+import { AuthContext } from '../store/user_auth_context';
 
 const Navbar = () => {
+
+  const AuthCtx = use(AuthContext);
+
+  console.log(AuthCtx.userEmail);
   const [isOpen, setIsOpen] = useState(false);
  const navigate = useNavigate();
   const toggleMenu = () => {
@@ -72,8 +77,8 @@ const Navbar = () => {
             <NavItem to="/qrFrame">
              QR Frames
             </NavItem>
-            <NavItem to="/">
-              About us
+            <NavItem to="/contactus">
+              Contact us
             </NavItem>
           </ul>
         </div>

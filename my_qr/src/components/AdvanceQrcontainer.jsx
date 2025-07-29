@@ -451,6 +451,7 @@ const QRCodeGenerator = () => {
 
   return (
     <div className="min-h-screen px-4 py-8 bg-gray-50 sm:px-6 lg:px-8">
+    <title>Advanced QR</title>
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-12 text-center">

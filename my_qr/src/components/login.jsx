@@ -62,6 +62,7 @@ const Login = () => {
 
   return (
     <div className="flex items-center justify-center min-h-screen p-4 bg-gradient-to-br from-gray-50 to-blue-50">
+    <title>Login</title>
       <div className="w-full max-w-md overflow-hidden bg-white shadow-xl rounded-2xl">
         <div className="p-8 text-center bg-gradient-to-r from-blue-600 to-indigo-700">
           <h1 className="text-3xl font-bold text-white">Welcome Back</h1>

@@ -111,7 +111,7 @@ app.post("/login", async (req, res) => {
         userName: user.rows[0].userName,
       },
     });
-    console.log("done")
+    console.log("done");
   } catch (err) {
     console.error("Login error:", err);
     res.status(500).json({ error: "Internal server error" });
