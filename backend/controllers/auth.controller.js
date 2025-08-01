@@ -56,9 +56,10 @@ export const login = async (req, res) => {
     }
 
     const token = generateToken({
-        id: user.rows[0].id,
+        
         email: user.rows[0].email,
-        userName: user.rows[0].userName,
+        userName: user.rows[0].username,
+        createAt: user.rows[0].created_at,
       });
 
     res .cookie("token", token, {

@@ -6,7 +6,7 @@ const Navbar = () => {
 
   const AuthCtx = use(AuthContext);
 
-  console.log(AuthCtx.userEmail);
+  //console.log(AuthCtx.userEmail);
   const [isOpen, setIsOpen] = useState(false);
  const navigate = useNavigate();
   const toggleMenu = () => {
