@@ -10,7 +10,7 @@ export const userDetails = async(req,res) =>{
  const createAt = req.user.createAt;
 
  try{
-          const qrData = await db.query("SELECT * FROM qr_data WHERE email = $1",[userEmail]);
+          const qrData = await db.query("SELECT id, scan_count as scancount, package_type as package, redirect_url as url FROM public.qr_data WHERE email = $1",[userEmail]);
           console.log(qrData.rows);
 
           res.status(200).json({ 

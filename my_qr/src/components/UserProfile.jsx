@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { FiEdit, FiSave, FiX, FiUser, FiExternalLink } from "react-icons/fi";
+import { FiEdit, FiX, FiUser, FiExternalLink } from "react-icons/fi";
 
 const UserProfile = () => {
   // Sample user data - replace with actual data from your auth context
@@ -21,16 +21,13 @@ const UserProfile = () => {
     subscription: "",
     createdAt: "",
   });
-  const [getQRdata, setQRdata] = useState([]);
+  
 
   useEffect(() => {
     fetchUserData();
   }, []);
 
-  const mappingQrData = () => {
-    console.log(getQRdata);
-    
-  };
+  
 
   const fetchUserData = async () => {
     try {
@@ -49,7 +46,7 @@ const UserProfile = () => {
 
       const data = await response.json();
       setUserData(data.user);
-      setQRdata(data.qrData);
+      setQrCodes(data.qrData);
 
       //console.log(data);
     } catch (err) {
@@ -57,60 +54,25 @@ const UserProfile = () => {
       throw err;
     }
   };
-mappingQrData();
+  
+
   const sampleUser = {
     name: getUserData.userName,
     email: getUserData.userEmail,
-    subscription: "pro",
+    subscription: "All_QR",
     createdAt: getUserData.createAt,
   };
 
   // Subscription packages with display names and colors
   const subscriptionPackages = {
-    free: { name: "Free", color: "bg-gray-200 text-gray-800" },
-    basic: { name: "Package 1", color: "bg-blue-100 text-blue-800" },
-    pro: { name: "Package 2", color: "bg-purple-100 text-purple-800" },
-    enterprise: { name: "Package 3", color: "bg-green-100 text-green-800" },
+    Free: { name: "Free", color: "bg-gray-200 text-gray-800" },
+    All_QR: { name: "All_QR", color: "bg-blue-100 text-blue-800" },
+    Single_QR: { name: "Single_QR", color: "bg-purple-100 text-purple-800" },
+    Multi_QR: { name: "Multi_QR", color: "bg-green-100 text-green-800" },
   };
 
-  useEffect(() => {
-    // Initialize with sample user data
-    setProfileData({
-      name: sampleUser.name,
-      password: "",
-      newPassword: "",
-      confirmPassword: "",
-    });
 
-    // Sample QR code data - replace with actual API call
-    const sampleQrCodes = [
-      {
-        id: 1,
-        url: "https://example.com/products/awesome-product",
-        scanCount: 42,
-        package: "free",
-        image:
-          "https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https://example.com/products/awesome-product",
-      },
-      {
-        id: 2,
-        url: "https://example.com/special-offer",
-        scanCount: 128,
-        package: "pro",
-        image:
-          "https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https://example.com/special-offer",
-      },
-      {
-        id: 3,
-        url: "https://example.com/contact-us",
-        scanCount: 15,
-        package: "basic",
-        image:
-          "https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https://example.com/contact-us",
-      },
-    ];
-    setQrCodes(sampleQrCodes);
-  }, []);
+
 
   const handleProfileChange = (e) => {
     const { name, value } = e.target;
@@ -158,6 +120,7 @@ mappingQrData();
 
   return (
     <div className="max-w-6xl p-6 mx-auto">
+    <title>Profile</title>
       {/* Profile Header */}
       <div className="flex flex-col items-start justify-between mb-8 md:flex-row md:items-center">
         <div className="flex items-center mb-4 md:mb-0">
@@ -340,10 +303,10 @@ mappingQrData();
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {qrCodes.map((qr) => (
+              {qrCodes.map((qr,index) => (
                 <tr key={qr.id}>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <img src={qr.image} alt="QR Code" className="w-10 h-10" />
+                   {index+1}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">
                     <a
@@ -359,7 +322,7 @@ mappingQrData();
                     </a>
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
-                    {qr.scanCount.toLocaleString()}
+                    {qr.scancount.toLocaleString()}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span
