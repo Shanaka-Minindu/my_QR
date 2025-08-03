@@ -1,6 +1,8 @@
 import db from "../config/db.js";
 import bcrypt from "bcrypt";
 
+import { generateToken } from "../utils/token.util.js";
+
 const saltRounds = 10;
 
 export const register = async (req, res) => {
@@ -24,6 +26,9 @@ export const register = async (req, res) => {
     );
 
     res.status(201).json({ success: true, user: newUser.rows[0] });
+
+    //------------------- Cookie -----------------------
+
   } catch (err) {
     console.error("Registration error:", err);
     res.status(500).json({ error: "Internal server error" });
@@ -50,14 +55,27 @@ export const login = async (req, res) => {
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
-    res.status(200).json({
-      success: true,
-      user: {
-        id: user.rows[0].id,
+    const token = generateToken({
+        
         email: user.rows[0].email,
-        userName: user.rows[0].userName,
-      },
+        userName: user.rows[0].username,
+        createAt: user.rows[0].created_at,
+      });
+
+    res .cookie("token", token, {
+        httpOnly: true,
+        secure: "production",
+        sameSite: "lax", 
+        maxAge: 24 * 60 * 60 * 1000, 
+      }).status(200).json({
+      success: true,
+      uName : user.rows[0].username
     });
+
+      //------------------- Cookie -----------------------
+
+
+      
   } catch (err) {
     console.error("Login error:", err);
     res.status(500).json({ error: "Internal server error" });
