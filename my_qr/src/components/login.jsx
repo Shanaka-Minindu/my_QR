@@ -1,14 +1,22 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FcGoogle } from 'react-icons/fc';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../store/user_auth_context';
 
 const Login = () => {
+ const { login } = useAuth();
+  
+  
+
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+
+   const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -40,7 +48,10 @@ const Login = () => {
     }
 
     const data = await response.json();
-    console.log("Login success:", data);
+    console.log("Login success:", data.uName);
+    login(data);
+    
+    navigate('/user');
     // Handle successful login here
 
   } catch (error) {
