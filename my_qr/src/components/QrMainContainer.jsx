@@ -2,7 +2,9 @@ import React, { useEffect, useRef, useState } from "react";
 import QRCodeStyling from "qr-code-styling";
 import {Link} from 'react-router-dom';
 
+
 import SimpleQrSteps from "./SimpleQrSteps";
+import { qrFunction } from "../function/qrGenFunction";
 
 const qrCode = new QRCodeStyling({
   width: 2000,
@@ -18,9 +20,15 @@ const qrCode = new QRCodeStyling({
 });
 
 function QrMainContainer() {
-  const [url, setUrl] = useState("https://simpleqr.com");
+
+  
+  
+  const [url, setUrl] = useState("https://qr.com");
+  const [getNewUrl, setNewUrl] = useState("https://qr.com");
   const [fileExt, setFileExt] = useState("png");
   const ref = useRef(null);
+
+ 
 
   useEffect(() => {
     qrCode.append(ref.current);
@@ -28,9 +36,9 @@ function QrMainContainer() {
 
   useEffect(() => {
     qrCode.update({
-      data: url,
+      data: getNewUrl,
     });
-  }, [url]);
+  }, [getNewUrl]);
 
   const onUrlChange = (event) => {
     event.preventDefault();
@@ -41,10 +49,17 @@ function QrMainContainer() {
     setFileExt(event.target.value);
   };
 
-  const onDownloadClick = () => {
-    qrCode.download({
+  const onDownloadClick = async() => {
+    const urlID = await qrFunction(url);
+    console.log(urlID.id);
+    setNewUrl((pre)=>{ return "http://localhost:3000/qrresult/" +urlID.id});
+    
+    setTimeout(()=>{
+      qrCode.download({
       extension: fileExt,
     });
+    },5000)
+    
   };
 
   
@@ -66,7 +81,7 @@ function QrMainContainer() {
             <p className="text-center sm:text-left">Website or Page URL</p>
             <input
               className="w-full max-w-md px-2 mb-8 border rounded h-7 sm:rounded-none"
-              value={url}
+              
               onChange={onUrlChange}
               placeholder="Enter URL"
             />

@@ -69,7 +69,8 @@ export const login = async (req, res) => {
         maxAge: 24 * 60 * 60 * 1000, 
       }).status(200).json({
       success: true,
-      uName : user.rows[0].username
+      uName : user.rows[0].username,
+      email : user.rows[0].email
     });
 
       //------------------- Cookie -----------------------

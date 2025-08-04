@@ -2,6 +2,7 @@ import express from "express";
 import authRoutes from "./auth.routes.js";
 import { userDetails } from "../controllers/userProfileController.js";
 import auth from "../middlewares/auth.middleware.js";
+import { QrUrlCreate,FindRedirectUrl } from "../controllers/qrUrlController.js";
 const router = express.Router();
 
 
@@ -12,4 +13,6 @@ router.get("/", (req, res) => {
 });
 
 router.get("/shanaka",auth,userDetails);
+router.post("/qrurl",auth, QrUrlCreate );
+router.get("/autoRedirect/:qid",FindRedirectUrl);
 export default router;

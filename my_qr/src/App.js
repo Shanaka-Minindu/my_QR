@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
 import AdvanceQrcontainer from "./components/AdvanceQrcontainer";
 import NavBar from "./components/NavBar";
 import QrMainContainer from "./components/QrMainContainer";
@@ -9,18 +9,24 @@ import Login from "./components/login";
 import Register from "./components/Register";
 import UserProfile from "./components/UserProfile";
 import ContactUs from "./components/ContanctUs";
+import QrResult from "./components/QrResult";
 
 
+function LayoutWithNavFooter() {
+  return (
+    <>
+      <NavBar />
+      <Outlet />
+      <Footer />
+    </>
+  );
+}
 
 function App() {
-
-
-
   return (
     <BrowserRouter>
-      
-        <NavBar />
-        <Routes>
+      <Routes>
+        <Route element={<LayoutWithNavFooter />}>
           <Route path="/" element={<QrMainContainer />} />
           <Route path="/advancedQR" element={<AdvanceQrcontainer />} />
           <Route path="/qrFrame" element={<QRFrame />} />
@@ -28,9 +34,10 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/user" element={<UserProfile />} />
           <Route path="/contactus" element={<ContactUs />} />
-        </Routes>
-        <Footer />
-      
+        </Route>
+        
+        <Route path="/qrresult/:id" element={<QrResult />} />
+      </Routes>
     </BrowserRouter>
   );
 }
