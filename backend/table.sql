@@ -15,7 +15,16 @@ CREATE TABLE qr_data(
     package_type VARCHAR(50) NOT NULL,
     email VARCHAR(100) NOT NULL,
     redirect_url VARCHAR(2048) NOT NULL, 
-    created_url VARCHAR(2048) NOT NULL,
+    created_url VARCHAR(2048) NOT NULL,  
+    created_date TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE qr_data(
+    id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    scan_count INTEGER,
+    package_type VARCHAR(50) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    redirect_url VARCHAR(2048) NOT NULL, 
     created_date TIMESTAMPTZ DEFAULT NOW()
 );
 
