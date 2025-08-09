@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 
 export default function ContactUs() {
@@ -9,6 +9,21 @@ export default function ContactUs() {
   });
   const [submitted, setSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+
+  useEffect(()=>{
+    setItems();
+  },[])
+
+  const setItems = ()=>{
+    const userInfo = localStorage.getItem('user');
+
+    setFormData((pre) =>({
+      ...pre,
+      name : JSON.parse(userInfo).uName,
+      email : JSON.parse(userInfo).email
+    }))
+  }
 
   const handleChange = (e) => {
     const { name, value } = e.target;

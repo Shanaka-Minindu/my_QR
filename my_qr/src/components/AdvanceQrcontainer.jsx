@@ -1,9 +1,17 @@
 import React, { useState, useRef, useEffect } from "react";
 import QRCodeStyling from "qr-code-styling";
-import UserGuide from "./AdvancedUserGuid";
 import UserGuideSection from "./AdvancedUserGuid";
+import { qrFunctionWithAuth } from "../function/qrGenFunction";
+import { useAuth } from "../store/user_auth_context";
+import AuthPopup from "./AuthPopup";
+
 
 const QRCodeGenerator = () => {
+
+  const { user } = useAuth();
+  const [showAuthPopup, setShowAuthPopup] = useState(false);
+
+  
   // Refs
   const qrContainerRef = useRef(null);
   const qrCodeRef = useRef(null);
@@ -11,8 +19,10 @@ const QRCodeGenerator = () => {
   const presetNameRef = useRef(null);
 
   // State
-  const [showGuide, setShowGuide] = useState(false);
+  
+  const [isDownloading, setIsDownloading] = useState(false);
   const [qrData, setQrData] = useState("https://example.com");
+  const [newQrData, setNewQrData] = useState("");
   const [qrOptions, setQrOptions] = useState({
     previewOptions: { width: 250, height: 250 },
     downloadOptions: {
@@ -80,20 +90,23 @@ const QRCodeGenerator = () => {
 
   // Initialize QR codes
   useEffect(() => {
-    const previewQrCode = new QRCodeStyling({
+    const commonOptions = {
       ...qrOptions.downloadOptions,
+      data: qrData, // Use the state directly
+    };
+
+    const previewQrCode = new QRCodeStyling({
+      ...commonOptions,
       width: qrOptions.previewOptions.width,
       height: qrOptions.previewOptions.height,
     });
 
-    const downloadQrCode = new QRCodeStyling(qrOptions.downloadOptions);
+    const downloadQrCode = new QRCodeStyling(commonOptions);
 
     qrCodeRef.current = previewQrCode;
     downloadQrCodeRef.current = downloadQrCode;
 
-    if (qrContainerRef.current) {
-      previewQrCode.append(qrContainerRef.current);
-    }
+    previewQrCode.append(qrContainerRef.current);
 
     const savedPrefs = localStorage.getItem("qrPreferences");
     if (savedPrefs) {
@@ -103,7 +116,7 @@ const QRCodeGenerator = () => {
           ...prev,
           downloadOptions: { ...prev.downloadOptions, ...prefs },
         }));
-        if (prefs.data) setQrData(prefs.data);
+        if (prefs.data) setNewQrData(prefs.data);
         if (prefs.image) setLogoPreview(prefs.image);
       } catch (e) {
         console.error("Failed to load preferences", e);
@@ -165,11 +178,7 @@ const QRCodeGenerator = () => {
   // Handlers
   const handleUrlChange = (e) => {
     const newUrl = e.target.value;
-    setQrData(newUrl);
-    setQrOptions((prev) => ({
-      ...prev,
-      downloadOptions: { ...prev.downloadOptions, data: newUrl },
-    }));
+    setNewQrData(newUrl);
   };
 
   const handleLogoUpload = (e) => {
@@ -190,15 +199,62 @@ const QRCodeGenerator = () => {
     reader.readAsDataURL(file);
   };
 
-  const handleDownload = async () => {
-    if (downloadQrCodeRef.current) {
-      await downloadQrCodeRef.current.download({
+  const handleDownload =  async() => {
+
+    if (!user) {
+      setShowAuthPopup(true);
+      return;
+    }
+ try {
+      // Get fresh data
+      const result = await qrFunctionWithAuth(newQrData);
+      const downloadUrl = `http://localhost:3000/qrresult/${result.id}`;
+
+      // Create brand new instance to ensure no stale data
+      const downloadQr = new QRCodeStyling({
+        ...qrOptions.downloadOptions,
+        data: downloadUrl,
+      });
+
+      // Update preview
+      qrCodeRef.current.update({
+        ...qrOptions.downloadOptions,
+        data: downloadUrl,
+        width: qrOptions.previewOptions.width,
+        height: qrOptions.previewOptions.height,
+      });
+
+      // Download fresh instance
+      downloadQr.download({
         name: "qr-code",
         extension: fileExt,
       });
+
+      // Update state
+      setQrData(downloadUrl);
+      setQrOptions((prev) => ({
+        ...prev,
+        downloadOptions: {
+          ...prev.downloadOptions,
+          data: downloadUrl,
+        },
+      }));
+    } catch (error) {
+      console.error("Download failed:", error);
+      // Add error notification here
     }
+
   };
 
+  const handleLoginSuccess = async () => {
+    
+
+   
+
+
+    
+  };
+  
   const handleStyleChange = (property, value) => {
     setQrOptions((prev) => {
       const newOptions = { ...prev };
@@ -451,7 +507,7 @@ const QRCodeGenerator = () => {
 
   return (
     <div className="min-h-screen px-4 py-8 bg-gray-50 sm:px-6 lg:px-8">
-    <title>Advanced QR</title>
+      <title>Advanced QR</title>
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-12 text-center">
@@ -519,23 +575,36 @@ const QRCodeGenerator = () => {
 
                         <button
                           onClick={handleDownload}
-                          className="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                          disabled={isDownloading}
+                          className={`flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${
+                            isDownloading ? "opacity-50 cursor-not-allowed" : ""
+                          }`}
                         >
-                          <svg
-                            className="w-5 h-5 mr-2"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-                            />
-                          </svg>
-                          Download QR Code
+                          {isDownloading ? (
+                            <svg
+                              className="w-5 h-5 mr-2 animate-spin"
+                              viewBox="0 0 24 24"
+                            >
+                              {/* Loading spinner SVG */}
+                            </svg>
+                          ) : (
+                            <svg
+                              className="w-5 h-5 mr-2"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              {/* Download icon SVG */}
+                            </svg>
+                          )}
+                          {isDownloading ? "Generating..." : "Download QR Code"}
                         </button>
+                        {showAuthPopup && (
+        <AuthPopup
+          onClose={() => setShowAuthPopup(false)}
+          onLoginSuccess={handleLoginSuccess}
+        />
+      )}
                       </div>
                     </div>
 
@@ -654,7 +723,6 @@ const QRCodeGenerator = () => {
                         </label>
                         <input
                           type="text"
-                          value={qrData}
                           onChange={handleUrlChange}
                           placeholder="https://example.com"
                           className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -1184,10 +1252,9 @@ const QRCodeGenerator = () => {
       )}
 
       <div className="max-w-6xl mx-auto">
-      <div className="m-auto">
-         <UserGuideSection />
-      </div>
-       
+        <div className="m-auto">
+          <UserGuideSection />
+        </div>
       </div>
     </div>
   );
