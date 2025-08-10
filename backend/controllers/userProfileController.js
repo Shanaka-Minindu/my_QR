@@ -7,7 +7,7 @@ export const userDetails = async (req, res) => {
 
   try {
     const qrData = await db.query(
-      "SELECT id, scan_count as scancount, package_type as package, redirect_url as url FROM public.qr_data WHERE email = $1",
+      "SELECT id, scan_count as scancount, package_type as package, redirect_url as url FROM public.qr_data WHERE email = $1 ORDER BY id ASC",
       [userEmail]
     );
 

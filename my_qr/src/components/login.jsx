@@ -66,9 +66,9 @@ const Login = () => {
   }
 };
 
-  const handleGoogleLogin = () => {
-    // Implement Google OAuth logic here
-    window.location.href = 'https://your-backend.com/auth/google';
+  const handleGoogleLogin = async() => {
+   window.location.href = "http://localhost:3001/api/auth/google";
+  
   };
 
   return (
