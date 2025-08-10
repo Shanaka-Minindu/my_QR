@@ -1,16 +1,19 @@
 import { useState, useEffect } from "react";
-import { FiEdit, FiX, FiUser, FiExternalLink } from "react-icons/fi";
+import {
+  FiEdit,
+  FiX,
+  FiUser,
+  FiExternalLink,
+  FiLock,
+  FiChevronDown,
+  FiChevronUp,
+} from "react-icons/fi";
 
 const UserProfile = () => {
   // Sample user data - replace with actual data from your auth context
-
   const [editMode, setEditMode] = useState(false);
-  const [profileData, setProfileData] = useState({
-    name: "",
-    password: "",
-    newPassword: "",
-    confirmPassword: "",
-  });
+  const [showPasswordFields, setShowPasswordFields] = useState(false);
+  const [profileData, setProfileData] = useState({});
   const [qrCodes, setQrCodes] = useState([]);
   const [editingQr, setEditingQr] = useState(null);
   const [newUrl, setNewUrl] = useState("");
@@ -21,13 +24,10 @@ const UserProfile = () => {
     subscription: "",
     createdAt: "",
   });
-  
 
   useEffect(() => {
     fetchUserData();
   }, []);
-
-  
 
   const fetchUserData = async () => {
     try {
@@ -45,16 +45,16 @@ const UserProfile = () => {
       }
 
       const data = await response.json();
+
+      console.log(data);
+
       setUserData(data.user);
       setQrCodes(data.qrData);
-
-      //console.log(data);
     } catch (err) {
       console.error("Error fetching protected data:", err);
       throw err;
     }
   };
-  
 
   const sampleUser = {
     name: getUserData.userName,
@@ -71,9 +71,6 @@ const UserProfile = () => {
     Multi_QR: { name: "Multi_QR", color: "bg-green-100 text-green-800" },
   };
 
-
-
-
   const handleProfileChange = (e) => {
     const { name, value } = e.target;
     setProfileData({
@@ -82,23 +79,47 @@ const UserProfile = () => {
     });
   };
 
-  const handleSaveProfile = () => {
+  const handleSaveProfile = async () => {
     // Validate passwords if changing
-    if (
-      profileData.newPassword &&
-      profileData.newPassword !== profileData.confirmPassword
-    ) {
-      alert("New passwords don't match!");
-      return;
+    if (showPasswordFields) {
+      if (profileData.password) {
+        if (
+          profileData.newPassword &&
+          profileData.newPassword !== profileData.confirmPassword
+        ) {
+          alert("New passwords don't match!");
+          return;
+        }
+      } else {
+        alert("Current pasword is required");
+        return;
+      }
     }
 
     // In a real app, you would call updateUser from useAuth here
-    console.log("Profile updated:", {
-      name: profileData.name,
-      newPassword: profileData.newPassword || undefined,
-    });
+    console.log(profileData);
+
+    try {
+      const response = await fetch("http://localhost:3001/api/userupdare", {
+        method: "PATCH",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(profileData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Update failed");
+      }
+      const data = await response.json();
+      console.log("Update successful:", data);
+    } catch (err) {
+      console.log(err)
+    }
 
     setEditMode(false);
+    setShowPasswordFields(false);
   };
 
   const handleEditQr = (qr) => {
@@ -106,12 +127,36 @@ const UserProfile = () => {
     setNewUrl(qr.url);
   };
 
-  const handleSaveQrUrl = () => {
+  const handleSaveQrUrl = async () => {
     // Update the QR code URL in the local state
-    const updatedQrCodes = qrCodes.map((qr) =>
-      qr.id === editingQr.id ? { ...qr, url: newUrl } : qr
-    );
-    setQrCodes(updatedQrCodes);
+    const updatedQR = {
+      id :editingQr.id,
+      oldUrl :editingQr.url,
+      newUrl
+    }
+
+     try {
+      const response = await fetch("http://localhost:3001/api/updateurl", {
+        method: "PATCH",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedQR),
+      });
+
+      if (!response.ok) {
+        throw new Error("Update failed");
+      }
+      const data = await response.json();
+      console.log("Update successful:", data);
+    } catch (err) {
+      console.log(err)
+    }
+
+    console.log(updatedQR)
+   
+   // setQrCodes(updatedQrCodes);
     setEditingQr(null);
 
     // In a real app, you would call an API to save this change
@@ -120,7 +165,7 @@ const UserProfile = () => {
 
   return (
     <div className="max-w-6xl p-6 mx-auto">
-    <title>Profile</title>
+      <title>Profile</title>
       {/* Profile Header */}
       <div className="flex flex-col items-start justify-between mb-8 md:flex-row md:items-center">
         <div className="flex items-center mb-4 md:mb-0">
@@ -193,36 +238,55 @@ const UserProfile = () => {
                 Email cannot be changed
               </p>
             </div>
+          </div>
 
-            <div>
-              <label className="block mb-1 text-sm font-medium text-gray-700">
-                Current Password
-              </label>
-              <input
-                type="password"
-                name="password"
-                value={profileData.password}
-                onChange={handleProfileChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Leave blank to keep current"
-              />
-            </div>
+          {/* Password Change Toggle */}
+          <div className="mt-6">
+            <button
+              onClick={() => setShowPasswordFields(!showPasswordFields)}
+              className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200"
+            >
+              <FiLock className="mr-2" />
+              {showPasswordFields ? "Hide Password Change" : "Change Password"}
+              {showPasswordFields ? (
+                <FiChevronUp className="ml-2" />
+              ) : (
+                <FiChevronDown className="ml-2" />
+              )}
+            </button>
+          </div>
 
-            <div>
-              <label className="block mb-1 text-sm font-medium text-gray-700">
-                New Password
-              </label>
-              <input
-                type="password"
-                name="newPassword"
-                value={profileData.newPassword}
-                onChange={handleProfileChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Leave blank to keep current"
-              />
-            </div>
+          {/* Password Change Fields (Conditional) */}
+          {showPasswordFields && (
+            <div className="grid grid-cols-1 gap-6 mt-6 md:grid-cols-2">
+              <div>
+                <label className="block mb-1 text-sm font-medium text-gray-700">
+                  Current Password
+                </label>
+                <input
+                  type="password"
+                  name="password"
+                  value={profileData.password}
+                  onChange={handleProfileChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Enter current password"
+                />
+              </div>
 
-            {profileData.newPassword && (
+              <div>
+                <label className="block mb-1 text-sm font-medium text-gray-700">
+                  New Password
+                </label>
+                <input
+                  type="password"
+                  name="newPassword"
+                  value={profileData.newPassword}
+                  onChange={handleProfileChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Enter new password"
+                />
+              </div>
+
               <div className="md:col-span-2">
                 <label className="block mb-1 text-sm font-medium text-gray-700">
                   Confirm New Password
@@ -233,19 +297,24 @@ const UserProfile = () => {
                   value={profileData.confirmPassword}
                   onChange={handleProfileChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Confirm new password"
                 />
-                {profileData.newPassword !== profileData.confirmPassword && (
-                  <p className="mt-1 text-sm text-red-600">
-                    Passwords don't match
-                  </p>
-                )}
+                {profileData.newPassword &&
+                  profileData.newPassword !== profileData.confirmPassword && (
+                    <p className="mt-1 text-sm text-red-600">
+                      Passwords don't match
+                    </p>
+                  )}
               </div>
-            )}
-          </div>
+            </div>
+          )}
 
           <div className="flex justify-end mt-6 space-x-3">
             <button
-              onClick={() => setEditMode(false)}
+              onClick={() => {
+                setEditMode(false);
+                setShowPasswordFields(false);
+              }}
               className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
             >
               Cancel
@@ -303,11 +372,9 @@ const UserProfile = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {qrCodes.map((qr,index) => (
+              {qrCodes.map((qr, index) => (
                 <tr key={qr.id}>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                   {index+1}
-                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">{index + 1}</td>
                   <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">
                     <a
                       href={qr.url}

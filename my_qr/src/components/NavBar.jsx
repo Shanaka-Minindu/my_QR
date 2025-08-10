@@ -1,16 +1,36 @@
-import { useState,   } from "react";
-import { useNavigate ,Link , NavLink } from "react-router-dom";
-import {useAuth} from '../store/user_auth_context';
+import { useState } from "react";
+import { useNavigate, Link, NavLink } from "react-router-dom";
+import { useAuth } from "../store/user_auth_context";
 
 const Navbar = () => {
-const navigate = useNavigate()
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
- const { user, logout } = useAuth();
-  
+  const { user, logout } = useAuth();
 
+  const userLogout = async () => {
+    try {
+      const response = await fetch("http://localhost:3001/api/auth/logout", {
+        method: "POST",
+        credentials: "include",
 
+        headers: { "Content-Type": "application/json" },
+      });
 
-  
+      // Handle HTTP errors
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(
+          errorData.error || `HTTP error! status: ${response.status}`
+        );
+      }
+    } catch (err) {
+      console.error("Error posting data:", err);
+      throw err;
+    }
+
+    logout();
+  };
+
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   };
@@ -35,7 +55,12 @@ const navigate = useNavigate()
         <div className="flex space-x-3 md:order-2 md:space-x-0 rtl:space-x-reverse">
           {user ? (
             <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2" onClick={()=>{navigate("/user")}}>
+              <div
+                className="flex items-center space-x-2"
+                onClick={() => {
+                  navigate("/user");
+                }}
+              >
                 <span className="hidden text-sm font-medium text-gray-900 md:block">
                   {user.uName}
                 </span>
@@ -47,13 +72,16 @@ const navigate = useNavigate()
                 >
                   <img
                     className="w-8 h-8 rounded-full"
-                    src={user.avatar || 'https://cdn-icons-png.flaticon.com/512/260/260253.png'}
+                    src={
+                      user.avatar ||
+                      "https://cdn-icons-png.flaticon.com/512/260/260253.png"
+                    }
                     alt="User profile"
                   />
                 </button>
               </div>
               <button
-                onClick={logout}
+                onClick={userLogout}
                 className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200"
               >
                 Logout

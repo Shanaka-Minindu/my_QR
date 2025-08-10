@@ -2,31 +2,72 @@ import db from "../config/db.js";
 
 export const QrUrlCreate = async (req, res) => {
   console.log(req.body.redirect_url);
-  console.log(req.user.email);
+  console.log(req.body.email);
 
   const redirect_url = req.body.redirect_url;
-  const email = req.user.email || null;
+  var email = "";
+
+  if (req.user) {
+    email = String(req.user.email);
+  } else {
+    email = req.body.email;
+  }
 
   try {
-    const reponse = await db.query(
-      "INSERT INTO qr_data (scan_count, package_type, email, redirect_url) VALUES(50,'FREE',$1,$2) RETURNING id",
+    const response = await db.query(
+      "INSERT INTO qr_data (scan_count, package_type, email, redirect_url) VALUES(50,'Free',$1,$2) RETURNING id",
       [email, redirect_url]
     );
-    console.log(reponse.rows);
-    res.send(reponse.rows[0]);
+
+    res.send(response.rows[0]);
   } catch (err) {}
 };
 
 export const FindRedirectUrl = async (req, res) => {
   const id = req.params.qid;
-  
+
+  const results = {
+    url: "",
+    advertisements: false,
+  };
   try {
-    const ridUrl = await db.query(
-      "SELECT redirect_url FROM qr_data WHERE id = $1",
+    const response = await db.query(
+      "SELECT redirect_url, package_type, scan_count FROM qr_data WHERE id = $1 ORDER BY DESC",
       [id]
     );
 
-    
-    res.status(200).json({url :ridUrl.rows[0].redirect_url })
+    // console.log(response.rows[0].redirect_url)
+    results.url = await response.rows[0].redirect_url;
+
+    const scan_count = response.rows[0].scan_count;
+
+    if (0 > scan_count) {
+      results.advertisements = await true;
+    }
+
+    try {
+      await db.query("UPDATE qr_data SET scan_count = $1 WHERE id = $2", [
+        scan_count - 1,
+        id,
+      ]);
+    } catch (err) {}
+
+    res.status(200).json({ results });
   } catch (err) {}
+};
+
+export const updateUrl = async (req, res) => {
+  const { id, newUrl, oldUrl } = req.body;
+
+  if (newUrl !== oldUrl) {
+    try {
+      const response = await db.query(
+        "UPDATE qr_data SET redirect_url = $1 WHERE id = $2",
+        [newUrl, id]
+      );
+      res.send(response.rows[0]);
+    } catch (err) {
+      console.log(err);
+    }
+  }
 };

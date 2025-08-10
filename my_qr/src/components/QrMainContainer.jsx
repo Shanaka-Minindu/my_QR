@@ -28,6 +28,9 @@ function QrMainContainer() {
   const [fileExt, setFileExt] = useState("png");
   const ref = useRef(null);
 
+ const userData = localStorage.getItem("user");
+ const email =  userData ? JSON.parse(userData).email : "empty";
+
  
 
   useEffect(() => {
@@ -50,7 +53,7 @@ function QrMainContainer() {
   };
 
   const onDownloadClick = async() => {
-    const urlID = await qrFunction(url);
+    const urlID = await qrFunction(url,email);
     console.log(urlID.id);
     setNewUrl((pre)=>{ return "http://localhost:3000/qrresult/" +urlID.id});
     
