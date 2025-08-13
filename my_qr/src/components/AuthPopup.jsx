@@ -1,7 +1,6 @@
-import { useState, useEffect } from 'react';
-import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
+import { useState } from 'react';
 import { useAuth } from '../store/user_auth_context';
-
+import { FcGoogle } from 'react-icons/fc';
 const AuthPopup = ({ onClose }) => {
   const [isLoginView, setIsLoginView] = useState(true);
   const [email, setEmail] = useState('');
@@ -22,7 +21,6 @@ const AuthPopup = ({ onClose }) => {
           email,
           password
       }
-
 
 try {
     const response = await fetch("http://localhost:3001/api/auth/login", {
@@ -65,29 +63,8 @@ try {
     }
   };
 
-  const handleGoogleSuccess = (credentialResponse) => {
-    console.log('Google login success:', credentialResponse);
-    // Here you would verify the credential with your backend
-    // For demo purposes, we'll decode the JWT to get user info
-    try {
-      const payload = JSON.parse(atob(credentialResponse.credential.split('.')[1]));
-      const user = {
-        email: payload.email,
-        name: payload.name,
-        picture: payload.picture,
-        googleId: payload.sub
-      };
-      localStorage.setItem('user', JSON.stringify(user));
-      document.cookie = `user=${JSON.stringify(user)}; path=/; max-age=${60 * 60 * 24 * 7}`;
-      
-      onClose();
-    } catch (error) {
-      console.error('Error decoding Google token:', error);
-    }
-  };
-
-  const handleGoogleError = () => {
-    console.log('Google login failed');
+const handleGoogleLogin = () => {
+ window.location.href = "http://localhost:3001/api/auth/google";
   };
 
   return (
@@ -102,15 +79,13 @@ try {
           </button>
         </div>
 
-        <div className="mb-4">
-          <GoogleOAuthProvider clientId="YOUR_GOOGLE_CLIENT_ID">
-            <GoogleLogin
-              onSuccess={handleGoogleSuccess}
-              onError={handleGoogleError}
-              width="300"
-            />
-          </GoogleOAuthProvider>
-        </div>
+        <button
+                    onClick={handleGoogleLogin}
+                    className="flex items-center justify-center w-full gap-3 px-4 py-3 text-sm font-medium text-gray-700 transition-all bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  >
+                    <FcGoogle className="text-xl" />
+                    Continue with Google
+                  </button>
 
         <div className="flex items-center my-4">
           <div className="flex-grow border-t border-gray-300"></div>

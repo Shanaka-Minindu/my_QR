@@ -28,9 +28,9 @@ passport.use(
             profile.id,
           ]);
         }
-        console.log(result);
         
-        generateToken()
+
+         
         done(null, result.rows[0]); // User object will be in req.user
       } catch (err) {
         done(err, null);
