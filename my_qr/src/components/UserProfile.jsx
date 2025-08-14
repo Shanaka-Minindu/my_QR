@@ -112,6 +112,7 @@ const UserProfile = () => {
       if (!response.ok) {
         throw new Error("Update failed");
       }
+      
       const data = await response.json();
       console.log("Update successful:", data);
     } catch (err) {
@@ -148,6 +149,7 @@ const UserProfile = () => {
       if (!response.ok) {
         throw new Error("Update failed");
       }
+       await fetchUserData();
       const data = await response.json();
       console.log("Update successful:", data);
     } catch (err) {

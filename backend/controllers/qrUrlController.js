@@ -32,7 +32,7 @@ export const FindRedirectUrl = async (req, res) => {
   };
   try {
     const response = await db.query(
-      "SELECT redirect_url, package_type, scan_count FROM qr_data WHERE id = $1 ORDER BY DESC",
+      "SELECT redirect_url, package_type, scan_count FROM qr_data WHERE id = $1",
       [id]
     );
 

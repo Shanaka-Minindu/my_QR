@@ -17,11 +17,12 @@ export default function ContactUs() {
 
   const setItems = ()=>{
     const userInfo = localStorage.getItem('user');
+    
 
     setFormData((pre) =>({
       ...pre,
-      name : JSON.parse(userInfo).uName,
-      email : JSON.parse(userInfo).email
+      name : userInfo ? JSON.parse(userInfo).uName : "",
+      email : userInfo ? JSON.parse(userInfo).email : ""
     }))
   }
 

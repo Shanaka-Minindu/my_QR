@@ -248,8 +248,7 @@ const QRCodeGenerator = () => {
 
   const handleLoginSuccess = async () => {
     
-
-   
+ 
 
 
     
