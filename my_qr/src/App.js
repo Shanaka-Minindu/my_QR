@@ -10,6 +10,7 @@ import Register from "./components/Register";
 import UserProfile from "./components/UserProfile";
 import ContactUs from "./components/ContanctUs";
 import QrResult from "./components/QrResult";
+import Priceing from "./components/Pricing";
 
 
 function LayoutWithNavFooter() {
@@ -34,6 +35,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/user" element={<UserProfile />} />
           <Route path="/contactus" element={<ContactUs />} />
+          <Route path="/pricing" element={<Priceing/>}/>
         </Route>
         
         <Route path="/qrresult/:id" element={<QrResult />} />

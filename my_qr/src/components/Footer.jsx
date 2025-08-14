@@ -1,3 +1,4 @@
+    import { Link } from 'react-router-dom';
 const Footer = () => {
   return (
     <footer className="mt-12 border-t border-gray-200 bg-gray-50">
@@ -21,7 +22,7 @@ const Footer = () => {
             <ul className="space-y-2">
               <li><a href="#" className="text-sm text-gray-600 hover:text-blue-500">Home</a></li>
               <li><a href="#" className="text-sm text-gray-600 hover:text-blue-500">Generate QR</a></li>
-              <li><a href="#" className="text-sm text-gray-600 hover:text-blue-500">Pricing</a></li>
+              <li><Link  to="/pricing" className="text-sm text-gray-600 hover:text-blue-500">Pricing</Link ></li>
               <li><a href="#" className="text-sm text-gray-600 hover:text-blue-500">API</a></li>
             </ul>
           </div>

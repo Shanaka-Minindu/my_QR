@@ -2,8 +2,12 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
 import { RiCheckboxCircleFill, RiErrorWarningFill } from "react-icons/ri";
-
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../store/user_auth_context';
 const Register = () => {
+   const { login } = useAuth();
+      const navigate = useNavigate();
+      
   const [formData, setFormData] = useState({
     userName: "",
     email: "",
@@ -63,7 +67,7 @@ const Register = () => {
       // Submit form
 
       try {
-        const response = await fetch("http://localhost:3001/register", {
+        const response = await fetch("http://localhost:3001/api/auth/register", {
           method: "POST",
           body: JSON.stringify(formData),
           headers: {
@@ -81,6 +85,9 @@ const Register = () => {
 
         const data = await response.json();
         console.log("Registration form submitted:", data);
+        login(data);
+    
+    navigate('/user');
       } catch (error) {
         console.error("Login error:", error);
         setErrors({
@@ -128,6 +135,10 @@ const Register = () => {
     }
   };
 
+   const handleGoogleLogin = async() => {
+ window.location.href = "http://localhost:3001/api/auth/google";
+  };
+
   return (
     <div className="flex items-center justify-center min-h-screen p-4 bg-gradient-to-br from-gray-50 to-blue-50">
       <div className="w-full max-w-md overflow-hidden bg-white shadow-xl rounded-2xl">
@@ -140,7 +151,7 @@ const Register = () => {
 
         <div className="p-8 space-y-6">
           <button
-            onClick={() => {}}
+            onClick={() => {handleGoogleLogin()}}
             className="flex items-center justify-center w-full gap-3 px-4 py-3 text-sm font-medium text-gray-700 transition-all bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
           >
             <FcGoogle className="text-xl" />

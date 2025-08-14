@@ -8,8 +8,10 @@ import {
   FiChevronDown,
   FiChevronUp,
 } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
 
 const UserProfile = () => {
+   const navigate = useNavigate();
   // Sample user data - replace with actual data from your auth context
   const [editMode, setEditMode] = useState(false);
   const [showPasswordFields, setShowPasswordFields] = useState(false);
@@ -24,7 +26,17 @@ const UserProfile = () => {
     subscription: "",
     createdAt: "",
   });
+useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const uName = params.get("uName");
+    const email = params.get("email");
 
+    if (uName && email) {
+      localStorage.setItem("user", JSON.stringify({ uName, email }));
+    } else {
+      
+    }
+  }, []);
   useEffect(() => {
     fetchUserData();
   }, []);

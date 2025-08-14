@@ -20,13 +20,28 @@ export const register = async (req, res) => {
     }
 
     const hash = await bcrypt.hash(password, saltRounds);
-    const newUser = await db.query(
+    const user = await db.query(
       "INSERT INTO users (email, hash_password, userName) VALUES ($1, $2, $3) RETURNING id, email, userName",
       [email, hash, userName]
     );
 
-    res.status(201).json({ success: true, user: newUser.rows[0] });
 
+    const token = generateToken({
+        email: user.rows[0].email,
+        userName: user.rows[0].username,
+        createAt: user.rows[0].created_at,
+      });
+
+    res .cookie("token", token, {
+        httpOnly: true,
+        secure: "production",
+        sameSite: "lax", 
+        maxAge: 24 * 60 * 60 * 1000, 
+      }).status(200).json({
+      success: true,
+      uName : user.rows[0].username,
+      email : user.rows[0].email
+    });
     //------------------- Cookie -----------------------
 
   } catch (err) {
@@ -56,7 +71,6 @@ export const login = async (req, res) => {
     }
 
     const token = generateToken({
-        
         email: user.rows[0].email,
         userName: user.rows[0].username,
         createAt: user.rows[0].created_at,
@@ -65,8 +79,8 @@ export const login = async (req, res) => {
     res .cookie("token", token, {
         httpOnly: true,
         secure: "production",
-        sameSite: "lax", 
-        maxAge: 24 * 60 * 60 * 1000, 
+        sameSite: "lax",
+        maxAge: 24 * 60 * 60 * 1000,
       }).status(200).json({
       success: true,
       uName : user.rows[0].username,
