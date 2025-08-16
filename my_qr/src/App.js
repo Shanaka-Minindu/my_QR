@@ -11,6 +11,7 @@ import UserProfile from "./components/UserProfile";
 import ContactUs from "./components/ContanctUs";
 import QrResult from "./components/QrResult";
 import Priceing from "./components/Pricing";
+import AdminUserControll from "./components/AdminUserControll";
 
 
 function LayoutWithNavFooter() {
@@ -36,6 +37,7 @@ function App() {
           <Route path="/user" element={<UserProfile />} />
           <Route path="/contactus" element={<ContactUs />} />
           <Route path="/pricing" element={<Priceing/>}/>
+          <Route path="/adminuser" element={<AdminUserControll/>}/>
         </Route>
         
         <Route path="/qrresult/:id" element={<QrResult />} />

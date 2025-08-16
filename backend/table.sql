@@ -11,7 +11,7 @@ CREATE TABLE users (
 
 CREATE TABLE qr_data(
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    scan_count INTEGER,
+    scan_count INTEGER, 
     package_type VARCHAR(50) NOT NULL,
     email VARCHAR(100) NOT NULL,
     redirect_url VARCHAR(2048) NOT NULL, 
@@ -31,5 +31,7 @@ CREATE TABLE qr_data(
 CREATE TABLE all_url(
           id SERIAL PRIMARY KEY,
           email VARCHAR(100) NOT NULL,
-          ascan_count INTEGER
+          scan_count INTEGER
+          //need to add price, subscribed date, exp date,  column 
 );
+
