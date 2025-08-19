@@ -2,21 +2,23 @@ import db from "../config/db.js";
 
 export const QrUrlCreate = async (req, res) => {
   console.log(req.body.redirect_url);
-  console.log(req.body.email);
+  console.log(req.body.uid);
 
   const redirect_url = req.body.redirect_url;
-  var email = "";
+  var uid = '';
 
   if (req.user) {
-    email = String(req.user.email);
+    uid = req.user.userId;
   } else {
-    email = req.body.email;
+    uid = req.body.uid;
   }
+
+   console.log(uid);
 
   try {
     const response = await db.query(
-      "INSERT INTO qr_data (scan_count, package_type, email, redirect_url) VALUES(50,'Free',$1,$2) RETURNING id",
-      [email, redirect_url]
+      "INSERT INTO qr_data (scan_count, package_type, user_id, redirect_url) VALUES(50,'Free',$1,$2) RETURNING id",
+      [uid, redirect_url]
     );
 
     res.send(response.rows[0]);

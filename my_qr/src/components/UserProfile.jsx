@@ -9,8 +9,11 @@ import {
   FiChevronUp,
 } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../store/user_auth_context"; 
 
 const UserProfile = () => {
+   const {user, login } = useAuth();
+   
    const navigate = useNavigate();
   // Sample user data - replace with actual data from your auth context
   const [editMode, setEditMode] = useState(false);
@@ -30,9 +33,9 @@ useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const uName = params.get("uName");
     const email = params.get("email");
-
-    if (uName && email) {
-      localStorage.setItem("user", JSON.stringify({ uName, email }));
+    const userId = params.get("uid");
+    if (uName && email && userId) {
+      localStorage.setItem("user", JSON.stringify({ uName, email,userId }));
     } else {
       
     }
@@ -126,7 +129,12 @@ useEffect(() => {
       }
       
       const data = await response.json();
-      console.log("Update successful:", data);
+      
+       console.log(data);
+       await login(data)
+       setUserData((pre)=>({...pre, name: data.uName}));
+       console.log(getUserData);
+     
     } catch (err) {
       console.log(err)
     }
@@ -188,7 +196,7 @@ useEffect(() => {
           </div>
           <div>
             <h1 className="text-2xl font-bold text-gray-800">
-              {sampleUser.name}
+              {user? user.uName : ""}
             </h1>
             <p className="text-gray-600">{sampleUser.email}</p>
             <p className="text-sm text-gray-500">
@@ -405,14 +413,14 @@ useEffect(() => {
                   <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
                     {qr.scancount.toLocaleString()}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span
+                  <td onClick={()=>alert(qr.id)} className="px-6 py-4 whitespace-nowrap">
+                    <button
                       className={`px-2 py-1 rounded-full text-xs font-medium ${
                         subscriptionPackages[qr.package].color
                       }`}
                     >
                       {subscriptionPackages[qr.package].name}
-                    </span>
+                    </button>
                   </td>
                   <td className="px-6 py-4 text-sm font-medium whitespace-nowrap">
                     <button

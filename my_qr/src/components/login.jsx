@@ -48,7 +48,7 @@ const Login = () => {
     }
 
     const data = await response.json();
-    console.log("Login success:", data.uName);
+    console.log("Login success:", data);
     login(data);
     
     navigate('/user');

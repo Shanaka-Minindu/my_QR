@@ -10,28 +10,31 @@ CREATE TABLE users (
 
 
 CREATE TABLE qr_data(
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    scan_count INTEGER, 
-    package_type VARCHAR(50) NOT NULL,
-    email VARCHAR(100) NOT NULL,
-    redirect_url VARCHAR(2048) NOT NULL, 
-    created_url VARCHAR(2048) NOT NULL,  
-    created_date TIMESTAMPTZ DEFAULT NOW()
-);
-
-CREATE TABLE qr_data(
     id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     scan_count INTEGER,
     package_type VARCHAR(50) NOT NULL,
-    email VARCHAR(100) NOT NULL,
+    user_id UUID REFERENCES users(id),
     redirect_url VARCHAR(2048) NOT NULL, 
     created_date TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE TABLE all_url(
-          id SERIAL PRIMARY KEY,
-          email VARCHAR(100) NOT NULL,
-          scan_count INTEGER
-          //need to add price, subscribed date, exp date,  column 
+
+
+CREATE TABLE single_qr(
+  id SERIAL PRIMARY KEY,
+  qr_id INTEGER REFERENCES qr_data(id),
+  single_Ptype VARCHAR (50) NOT NULL,
+  scan_count INTEGER NOT NULL,
+  sub_data TIMESTAMPTZ DEFAULT NOW(),
+  exp_data TIMESTAMPTZ NOT NULL
 );
 
+
+CREATE TABLE all_qr(
+  id SERIAL PRIMARY KEY,
+  userId UUID REFERENCES users(id),
+  single_Ptype VARCHAR (50) NOT NULL,
+  scan_count INTEGER NOT NULL,
+  sub_data TIMESTAMPTZ DEFAULT NOW(),
+  exp_data TIMESTAMPTZ NOT NULL
+);
