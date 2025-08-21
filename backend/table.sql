@@ -32,9 +32,18 @@ CREATE TABLE single_qr(
 
 CREATE TABLE all_qr(
   id SERIAL PRIMARY KEY,
-  userId UUID REFERENCES users(id),
-  single_Ptype VARCHAR (50) NOT NULL,
+  user_id UUID REFERENCES users(id),
+  all_Ptype VARCHAR (50) NOT NULL,
   scan_count INTEGER NOT NULL,
   sub_data TIMESTAMPTZ DEFAULT NOW(),
   exp_data TIMESTAMPTZ NOT NULL
+);
+
+
+CREATE TABLE pay_log(
+  id SERIAL PRIMARY KEY,
+  user_id UUID REFERENCES users(id) NOT NULL,
+  sub_Package VARCHAR (50) NOT NULL,
+  price NUMERIC(10, 2) NOT NULL,
+  date TIMESTAMPTZ DEFAULT NOW()
 );

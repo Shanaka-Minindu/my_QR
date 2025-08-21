@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { FiCheck, FiX, FiLink, FiLayers, FiDatabase, FiZap } from 'react-icons/fi';
 
-const PricingPopup = ({ isOpen, onClose, currentPackage, onPackageSelect }) => {
+const PricingPopup = ({ isOpen, onClose, currentPackage, onPackageSelect,SelectQr }) => {
   const [selectedUrl, setSelectedUrl] = useState('');
   const [selectedPlan, setSelectedPlan] = useState('');
+
+ 
 
   const allLinksPlans = [
     {
@@ -20,7 +22,7 @@ const PricingPopup = ({ isOpen, onClose, currentPackage, onPackageSelect }) => {
     {
       name: "1000 Scans",
       price: "$14.99",
-      scans: "1,000",
+      scans: "1000",
       features: [
         "Up to 25 links",
         "Advanced analytics",
@@ -31,7 +33,7 @@ const PricingPopup = ({ isOpen, onClose, currentPackage, onPackageSelect }) => {
     {
       name: "5000 Scans",
       price: "$29.99",
-      scans: "5,000",
+      scans: "5000",
       features: [
         "Up to 100 links",
         "Advanced analytics",
@@ -43,7 +45,7 @@ const PricingPopup = ({ isOpen, onClose, currentPackage, onPackageSelect }) => {
     {
       name: "10000 Scans",
       price: "$49.99",
-      scans: "10,000",
+      scans: "10000",
       features: [
         "Unlimited links",
         "Advanced analytics",
@@ -70,7 +72,7 @@ const PricingPopup = ({ isOpen, onClose, currentPackage, onPackageSelect }) => {
     {
       name: "1000 Scans",
       price: "$7.99",
-      scans: "1,000",
+      scans: "1000",
       features: [
         "1 link",
         "Advanced analytics",
@@ -81,7 +83,7 @@ const PricingPopup = ({ isOpen, onClose, currentPackage, onPackageSelect }) => {
     {
       name: "5000 Scans",
       price: "$14.99",
-      scans: "5,000",
+      scans: "5000",
       features: [
         "1 link",
         "Advanced analytics",
@@ -92,7 +94,7 @@ const PricingPopup = ({ isOpen, onClose, currentPackage, onPackageSelect }) => {
     {
       name: "10000 Scans",
       price: "$24.99",
-      scans: "10,000",
+      scans: "10000",
       features: [
         "1 link",
         "Advanced analytics",
@@ -205,7 +207,7 @@ const PricingPopup = ({ isOpen, onClose, currentPackage, onPackageSelect }) => {
                         ))}
                       </ul>
                       <button 
-                        onClick={() => onPackageSelect(plan)}
+                        onClick={() => onPackageSelect({...plan,  type : "all"})}
                         className="flex justify-center w-full px-4 py-2 mt-6 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                       >
                         Select Plan
@@ -228,19 +230,9 @@ const PricingPopup = ({ isOpen, onClose, currentPackage, onPackageSelect }) => {
               {/* URL Selection Dropdown */}
               <div className="max-w-md mx-auto mb-8">
                 <label htmlFor="url-select" className="block mb-2 text-sm font-medium text-gray-700">
-                  Select a URL to generate QR code for:
+                  Selected URL:
                 </label>
-                <select
-                  id="url-select"
-                  value={selectedUrl}
-                  onChange={(e) => setSelectedUrl(e.target.value)}
-                  className="block w-full py-2 pl-3 pr-10 text-base border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                >
-                  <option value="">Select a URL</option>
-                  {sampleUrls.map((url, index) => (
-                    <option key={index} value={url}>{url}</option>
-                  ))}
-                </select>
+                 {SelectQr.url} 
               </div>
 
               {/* Pricing Cards */}
@@ -266,11 +258,11 @@ const PricingPopup = ({ isOpen, onClose, currentPackage, onPackageSelect }) => {
                         ))}
                       </ul>
                       <button 
-                        disabled={!selectedUrl}
-                        onClick={() => onPackageSelect({...plan, selectedUrl})}
-                        className={`mt-6 w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white ${selectedUrl ? 'bg-indigo-600 hover:bg-indigo-700' : 'bg-indigo-300 cursor-not-allowed'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
+                        
+                        onClick={() => onPackageSelect({...plan, SelectQr:  SelectQr.url, qrId :SelectQr.id, type : "single"})}
+                        className={`mt-6 w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700'  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
                       >
-                        {selectedUrl ? 'Select Plan' : 'Select URL First'}
+                       Select Plan
                       </button>
                     </div>
                   </div>
