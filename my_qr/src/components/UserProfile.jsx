@@ -11,7 +11,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../store/user_auth_context";
 import PricingPopup from "./PricingPopup";
-
+import SubscriptionInfo from "./SubscriptionInfo";
 const UserProfile = () => {
   const { user, login } = useAuth();
 
@@ -25,6 +25,8 @@ const UserProfile = () => {
   const [newUrl, setNewUrl] = useState("");
   const [showPricingPopup, setShowPricingPopup] = useState(false);
   const [selectedQrForUpgrade, setSelectedQrForUpgrade] = useState(null);
+  const [allQrContainar, setAllQrContainar] = useState(false);
+  const[allQrData, setAllQrData] = useState({});
   const [getUserData, setUserData] = useState({
     name: "",
     email: "",
@@ -68,6 +70,34 @@ const UserProfile = () => {
 
       setUserData(data.user);
       setQrCodes(data.qrData);
+
+      var allQrContainer = true;
+      data.qrData.map(async (data) => {
+        if (allQrContainer) {
+          if (data.package === "All_QR") {
+            setAllQrContainar(true);
+
+            const response = await fetch(
+              "http://localhost:3001/api/allqrinfo",
+              {
+                method: "GET",
+                credentials: "include",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              }
+            );
+
+             if (!response.ok) {
+        throw new Error("All QR data fetch failed");
+      }
+const data = await response.json()
+      console.log(data);
+setAllQrData(data)
+            allQrContainer = false;
+          }
+        }
+      });
     } catch (err) {
       console.error("Error fetching protected data:", err);
       throw err;
@@ -147,8 +177,7 @@ const UserProfile = () => {
 
   const handlePackageSelect = async (selectedPackage) => {
     // console.log("Selected package:", selectedPackage);
-   // console.log("selected Qr For Upgrade :", selectedQrForUpgrade.scancount);
-
+    // console.log("selected Qr For Upgrade :", selectedQrForUpgrade.scancount);
 
     // Here you would implement the logic to upgrade the selected QR code
 
@@ -185,7 +214,7 @@ const UserProfile = () => {
       const newdata = {
         ...data,
         qrId: selectedPackage.qrId,
-        remainScanCount : selectedQrForUpgrade.scancount
+        remainScanCount: selectedQrForUpgrade.scancount,
       };
       console.log(newdata);
       try {
@@ -210,7 +239,7 @@ const UserProfile = () => {
         console.error("Subscription error:", err);
       }
     }
-await fetchUserData()
+    await fetchUserData();
     setShowPricingPopup(false);
     // You might want to call an API to update the subscription
   };
@@ -429,7 +458,7 @@ await fetchUserData()
           </div>
         </div>
       )}
-
+      {allQrContainar && <SubscriptionInfo qrCodes={allQrData} />}
       {/* QR Codes Table */}
       <div className="p-6 bg-white shadow-md rounded-xl">
         <h2 className="mb-4 text-xl font-semibold text-gray-800">

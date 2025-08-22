@@ -32,7 +32,7 @@ CREATE TABLE single_qr(
 
 CREATE TABLE all_qr(
   id SERIAL PRIMARY KEY,
-  user_id UUID REFERENCES users(id),
+  userid UUID REFERENCES users(id),
   all_Ptype VARCHAR (50) NOT NULL,
   scan_count INTEGER NOT NULL,
   sub_data TIMESTAMPTZ DEFAULT NOW(),
