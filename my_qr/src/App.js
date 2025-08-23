@@ -12,7 +12,7 @@ import ContactUs from "./components/ContanctUs";
 import QrResult from "./components/QrResult";
 import Priceing from "./components/Pricing";
 import AdminUserControll from "./components/AdminUserControll";
-
+import AdminLogin from "./components/AdminLogin";
 
 function LayoutWithNavFooter() {
   return (
@@ -38,6 +38,7 @@ function App() {
           <Route path="/contactus" element={<ContactUs />} />
           <Route path="/pricing" element={<Priceing/>}/>
           <Route path="/adminuser" element={<AdminUserControll/>}/>
+          <Route path="/adminlog" element={<AdminLogin/>}/>
         </Route>
         
         <Route path="/qrresult/:id" element={<QrResult />} />

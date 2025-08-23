@@ -26,7 +26,7 @@ const UserProfile = () => {
   const [showPricingPopup, setShowPricingPopup] = useState(false);
   const [selectedQrForUpgrade, setSelectedQrForUpgrade] = useState(null);
   const [allQrContainar, setAllQrContainar] = useState(false);
-  const[allQrData, setAllQrData] = useState({});
+  const [allQrData, setAllQrData] = useState({});
   const [getUserData, setUserData] = useState({
     name: "",
     email: "",
@@ -88,12 +88,13 @@ const UserProfile = () => {
               }
             );
 
-             if (!response.ok) {
-        throw new Error("All QR data fetch failed");
-      }
-const data = await response.json()
-      console.log(data);
-setAllQrData(data)
+            if (!response.ok) {
+              throw new Error("All QR data fetch failed");
+            }
+            console.log(response);
+            const data = await response.json();
+            console.log(data);
+            setAllQrData(data);
             allQrContainer = false;
           }
         }
