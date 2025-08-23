@@ -30,6 +30,7 @@ export const register = async (req, res) => {
         email: user.rows[0].email,
         userName: user.rows[0].username,
         createAt: user.rows[0].created_at,
+        userId : user.rows[0].id
       });
 
     res .cookie("token", token, {
@@ -40,7 +41,8 @@ export const register = async (req, res) => {
       }).status(200).json({
       success: true,
       uName : user.rows[0].username,
-      email : user.rows[0].email
+      email : user.rows[0].email,
+      userId : user.rows[0].id
     });
     //------------------- Cookie -----------------------
 
@@ -74,6 +76,7 @@ export const login = async (req, res) => {
         email: user.rows[0].email,
         userName: user.rows[0].username,
         createAt: user.rows[0].created_at,
+        userId : user.rows[0].id
       });
 
     res .cookie("token", token, {
@@ -84,7 +87,8 @@ export const login = async (req, res) => {
       }).status(200).json({
       success: true,
       uName : user.rows[0].username,
-      email : user.rows[0].email
+      email : user.rows[0].email,
+      userId : user.rows[0].id
     });
 
       //------------------- Cookie -----------------------

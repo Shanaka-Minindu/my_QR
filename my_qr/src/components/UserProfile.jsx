@@ -9,9 +9,13 @@ import {
   FiChevronUp,
 } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
-
+import { useAuth } from "../store/user_auth_context";
+import PricingPopup from "./PricingPopup";
+import SubscriptionInfo from "./SubscriptionInfo";
 const UserProfile = () => {
-   const navigate = useNavigate();
+  const { user, login } = useAuth();
+
+  const navigate = useNavigate();
   // Sample user data - replace with actual data from your auth context
   const [editMode, setEditMode] = useState(false);
   const [showPasswordFields, setShowPasswordFields] = useState(false);
@@ -19,22 +23,26 @@ const UserProfile = () => {
   const [qrCodes, setQrCodes] = useState([]);
   const [editingQr, setEditingQr] = useState(null);
   const [newUrl, setNewUrl] = useState("");
-
+  const [showPricingPopup, setShowPricingPopup] = useState(false);
+  const [selectedQrForUpgrade, setSelectedQrForUpgrade] = useState(null);
+  const [allQrContainar, setAllQrContainar] = useState(false);
+  const[allQrData, setAllQrData] = useState({});
   const [getUserData, setUserData] = useState({
     name: "",
     email: "",
     subscription: "",
     createdAt: "",
   });
-useEffect(() => {
+
+  const [getSelectQr, setQr] = useState("");
+  useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const uName = params.get("uName");
     const email = params.get("email");
-
-    if (uName && email) {
-      localStorage.setItem("user", JSON.stringify({ uName, email }));
+    const userId = params.get("uid");
+    if (uName && email && userId) {
+      localStorage.setItem("user", JSON.stringify({ uName, email, userId }));
     } else {
-      
     }
   }, []);
   useEffect(() => {
@@ -62,6 +70,34 @@ useEffect(() => {
 
       setUserData(data.user);
       setQrCodes(data.qrData);
+
+      var allQrContainer = true;
+      data.qrData.map(async (data) => {
+        if (allQrContainer) {
+          if (data.package === "All_QR") {
+            setAllQrContainar(true);
+
+            const response = await fetch(
+              "http://localhost:3001/api/allqrinfo",
+              {
+                method: "GET",
+                credentials: "include",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              }
+            );
+
+             if (!response.ok) {
+        throw new Error("All QR data fetch failed");
+      }
+const data = await response.json()
+      console.log(data);
+setAllQrData(data)
+            allQrContainer = false;
+          }
+        }
+      });
     } catch (err) {
       console.error("Error fetching protected data:", err);
       throw err;
@@ -124,15 +160,88 @@ useEffect(() => {
       if (!response.ok) {
         throw new Error("Update failed");
       }
-      
+
       const data = await response.json();
-      console.log("Update successful:", data);
+
+      console.log(data);
+      await login(data);
+      setUserData((pre) => ({ ...pre, name: data.uName }));
+      console.log(getUserData);
     } catch (err) {
-      console.log(err)
+      console.log(err);
     }
 
     setEditMode(false);
     setShowPasswordFields(false);
+  };
+
+  const handlePackageSelect = async (selectedPackage) => {
+    // console.log("Selected package:", selectedPackage);
+    // console.log("selected Qr For Upgrade :", selectedQrForUpgrade.scancount);
+
+    // Here you would implement the logic to upgrade the selected QR code
+
+    const data = {
+      scans: parseInt(selectedPackage.scans) || 0,
+      price: parseFloat(selectedPackage.price.replace(/[^0-9.-]+/g, "")) || 0,
+      name: selectedPackage.name,
+      type: selectedPackage.type,
+    };
+
+    if (selectedPackage.type === "all") {
+      try {
+        const response = await fetch("http://localhost:3001/api/allqrsub", {
+          method: "POST",
+          body: JSON.stringify(data),
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(
+            errorData || `HTTP error! status: ${response.status}`
+          );
+        }
+        const sucsessData = await response.json();
+        console.log("Subscription data : ", sucsessData);
+      } catch (err) {
+        console.error("Subscription error:", err);
+      }
+    } else if (selectedPackage.type === "single") {
+      const newdata = {
+        ...data,
+        qrId: selectedPackage.qrId,
+        remainScanCount: selectedQrForUpgrade.scancount,
+      };
+      console.log(newdata);
+      try {
+        const response = await fetch("http://localhost:3001/api/singleqrsub", {
+          method: "POST",
+          body: JSON.stringify(newdata),
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(
+            errorData || `HTTP error! status: ${response.status}`
+          );
+        }
+        const sucsessData = await response.json();
+        console.log("Subscription data : ", sucsessData);
+      } catch (err) {
+        console.error("Subscription error:", err);
+      }
+    }
+    await fetchUserData();
+    setShowPricingPopup(false);
+    // You might want to call an API to update the subscription
   };
 
   const handleEditQr = (qr) => {
@@ -143,12 +252,12 @@ useEffect(() => {
   const handleSaveQrUrl = async () => {
     // Update the QR code URL in the local state
     const updatedQR = {
-      id :editingQr.id,
-      oldUrl :editingQr.url,
-      newUrl
-    }
+      id: editingQr.id,
+      oldUrl: editingQr.url,
+      newUrl,
+    };
 
-     try {
+    try {
       const response = await fetch("http://localhost:3001/api/updateurl", {
         method: "PATCH",
         credentials: "include",
@@ -161,20 +270,27 @@ useEffect(() => {
       if (!response.ok) {
         throw new Error("Update failed");
       }
-       await fetchUserData();
+      await fetchUserData();
       const data = await response.json();
       console.log("Update successful:", data);
     } catch (err) {
-      console.log(err)
+      console.log(err);
     }
 
-    console.log(updatedQR)
-   
-   // setQrCodes(updatedQrCodes);
+    console.log(updatedQR);
+
+    // setQrCodes(updatedQrCodes);
     setEditingQr(null);
 
     // In a real app, you would call an API to save this change
     console.log("Updated QR URL:", { id: editingQr.id, newUrl });
+  };
+
+  const selectPackageBtn = (qr) => {
+    setSelectedQrForUpgrade(qr);
+    setShowPricingPopup(true);
+
+    setQr(qr);
   };
 
   return (
@@ -188,7 +304,7 @@ useEffect(() => {
           </div>
           <div>
             <h1 className="text-2xl font-bold text-gray-800">
-              {sampleUser.name}
+              {user ? user.uName : ""}
             </h1>
             <p className="text-gray-600">{sampleUser.email}</p>
             <p className="text-sm text-gray-500">
@@ -342,7 +458,7 @@ useEffect(() => {
           </div>
         </div>
       )}
-
+      {allQrContainar && <SubscriptionInfo qrCodes={allQrData} />}
       {/* QR Codes Table */}
       <div className="p-6 bg-white shadow-md rounded-xl">
         <h2 className="mb-4 text-xl font-semibold text-gray-800">
@@ -405,7 +521,10 @@ useEffect(() => {
                   <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
                     {qr.scancount.toLocaleString()}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td
+                    onClick={() => selectPackageBtn(qr)}
+                    className="px-6 py-4 cursor-pointer whitespace-nowrap"
+                  >
                     <span
                       className={`px-2 py-1 rounded-full text-xs font-medium ${
                         subscriptionPackages[qr.package].color
@@ -475,6 +594,13 @@ useEffect(() => {
           </div>
         </div>
       )}
+      <PricingPopup
+        isOpen={showPricingPopup}
+        onClose={() => setShowPricingPopup(false)}
+        currentPackage={selectedQrForUpgrade?.package}
+        SelectQr={getSelectQr}
+        onPackageSelect={handlePackageSelect}
+      />
     </div>
   );
 };

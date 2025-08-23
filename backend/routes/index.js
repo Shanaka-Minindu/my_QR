@@ -3,6 +3,7 @@ import authRoutes from "./auth.routes.js";
 import { userDetails, updateUser } from "../controllers/userProfileController.js";
 import auth from "../middlewares/auth.middleware.js";
 import { QrUrlCreate,FindRedirectUrl, updateUrl } from "../controllers/qrUrlController.js";
+import { allQrSub, singleQrSub, allQrInfo } from "../controllers/subscriptionController.js";
 const router = express.Router();
 
 
@@ -18,4 +19,11 @@ router.get("/autoRedirect/:qid",FindRedirectUrl);
 router.post("/qrurlwithauth",auth,QrUrlCreate);
 router.patch("/userupdare", auth,updateUser );
 router.patch("/updateurl", auth,updateUrl );
+
+
+
+router.post("/allqrsub",auth,allQrSub)
+router.post("/singleqrsub",auth,singleQrSub);
+router.get("/allqrinfo",auth,allQrInfo)
+
 export default router;

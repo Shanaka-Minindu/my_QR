@@ -27,8 +27,9 @@ const Navbar = () => {
       console.error("Error posting data:", err);
       throw err;
     }
-
+    
     logout();
+    navigate('/');
   };
 
   const toggleMenu = () => {

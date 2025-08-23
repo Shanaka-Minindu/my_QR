@@ -207,7 +207,9 @@ const QRCodeGenerator = () => {
     }
  try {
       // Get fresh data
+      console.log(newQrData)
       const result = await qrFunctionWithAuth(newQrData);
+      console.log('2---')
       const downloadUrl = `http://localhost:3000/qrresult/${result.id}`;
 
       // Create brand new instance to ensure no stale data

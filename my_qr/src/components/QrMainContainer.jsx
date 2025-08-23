@@ -1,11 +1,11 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { use, useEffect, useRef, useState } from "react";
 import QRCodeStyling from "qr-code-styling";
 import {Link} from 'react-router-dom';
-
+import AuthPopup from "./AuthPopup";
 
 import SimpleQrSteps from "./SimpleQrSteps";
 import { qrFunction } from "../function/qrGenFunction";
-
+import { useAuth } from "../store/user_auth_context";
 const qrCode = new QRCodeStyling({
   width: 2000,
   height: 2000,
@@ -21,15 +21,16 @@ const qrCode = new QRCodeStyling({
 
 function QrMainContainer() {
 
-  
+  const {user} = useAuth();
   
   const [url, setUrl] = useState("https://qr.com");
   const [getNewUrl, setNewUrl] = useState("https://qr.com");
   const [fileExt, setFileExt] = useState("png");
+  const [showAuthPopup, setShowAuthPopup] = useState(false);
   const ref = useRef(null);
 
  const userData = localStorage.getItem("user");
- const email =  userData ? JSON.parse(userData).email : "empty";
+ const uid =  userData ? JSON.parse(userData).userId : "empty";
 
  
 
@@ -48,12 +49,22 @@ function QrMainContainer() {
     setUrl(event.target.value);
   };
 
+  const handleLoginSuccess = async () => {
+    
+    console.log("gofdd")
+  };
+
   const onExtensionChange = (event) => {
     setFileExt(event.target.value);
   };
 
   const onDownloadClick = async() => {
-    const urlID = await qrFunction(url,email);
+    if (!user) {
+      setShowAuthPopup(true);
+      return;
+    }
+    
+    const urlID = await qrFunction(url,uid);
     console.log(urlID.id);
     setNewUrl((pre)=>{ return "http://localhost:3000/qrresult/" +urlID.id});
     
@@ -135,6 +146,12 @@ function QrMainContainer() {
                 Download My Free QR
               </span>
             </button>
+            {showAuthPopup && (
+                    <AuthPopup
+                      onClose={() => setShowAuthPopup(false)}
+                      onLoginSuccess={handleLoginSuccess}
+                    />
+                  )}
           </div>
         </div>
       </div>

@@ -20,6 +20,7 @@ router.get(
       email: req.user.email,
       userName: req.user.username,
       createAt: req.user.created_at,
+      userId : req.user.id
     };
 
     const token = generateToken(tokenData);
@@ -32,7 +33,7 @@ router.get(
     });
 
     // Redirect to frontend with user info in query params
-    res.redirect(`http://localhost:3000/user?uName=${encodeURIComponent(req.user.username)}&email=${encodeURIComponent(req.user.email)}`);
+    res.redirect(`http://localhost:3000/user?uName=${encodeURIComponent(req.user.username)}&email=${encodeURIComponent(req.user.email)}&uid=${encodeURIComponent(req.user.id)}`);
   }
 );
 

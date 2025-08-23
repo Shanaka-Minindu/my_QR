@@ -2,6 +2,7 @@ import { verifyToken } from "../utils/token.util.js";
 
 const auth = (req, res, next) => {
   const token = req.cookies.token;
+  
    
   if (!token) {
     return res.status(401).json({ error: "Not authenticated" });
@@ -9,6 +10,7 @@ const auth = (req, res, next) => {
 
   try {
     const decoded = verifyToken(token);
+    
     req.user = decoded;
    
     next();

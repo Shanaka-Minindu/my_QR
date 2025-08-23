@@ -1,7 +1,7 @@
-export const qrFunction = async (link,email) => {
+export const qrFunction = async (link,uid) => {
   const data = {
     redirect_url: link,
-    email
+    uid
   };
 
   try {
