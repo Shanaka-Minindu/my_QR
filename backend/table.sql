@@ -47,3 +47,11 @@ CREATE TABLE pay_log(
   price NUMERIC(10, 2) NOT NULL,
   date TIMESTAMPTZ DEFAULT NOW()
 );
+
+CREATE TABLE admin_user(
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  email VARCHAR(255) NOT NULL UNIQUE,
+  userName VARCHAR(255) NOT NULL,
+  hash_password TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW()
+);
