@@ -5,12 +5,16 @@ export const QrUrlCreate = async (req, res) => {
   console.log(req.body.uid);
 
   const redirect_url = req.body.redirect_url;
-  var uid = "";
+  var uid = null;
 
   if (req.user) {
     uid = req.user.userId;
   } else {
     uid = req.body.uid;
+  }
+
+  if(!uid || !redirect_url){
+    return res.status(400).json({ error: "Login error" });
   }
 
   var ptype = "Free";
