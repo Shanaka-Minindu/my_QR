@@ -64,7 +64,7 @@ function QrMainContainer() {
       return;
     }
     
-    const urlID = await qrFunction(url,uid);
+    const urlID = await qrFunction(url);
     console.log(urlID.id);
     setNewUrl((pre)=>{ return "http://localhost:3000/qrresult/" +urlID.id});
     

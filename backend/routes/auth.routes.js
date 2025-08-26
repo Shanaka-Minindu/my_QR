@@ -1,15 +1,16 @@
 import express from "express";
-import { register, login, logout } from "../controllers/auth.controller.js";
+import { register, login, logout,checkAuth } from "../controllers/auth.controller.js";
 import passport from "passport";
 import { generateToken } from "../utils/token.util.js";
 import { adminRegister, adminLogin,adminLogOut } from "../controllers/adminContoller.js";
-
+import auth from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
 
 router.post("/register", register);
 router.post("/login", login);
 router.post("/logout", logout);
+router.get("/check",auth,checkAuth)
 // Google login route
 router.get("/google", passport.authenticate("google", { scope: ["profile", "email"] }));
 
@@ -26,7 +27,7 @@ router.get(
     };
 
     const token = generateToken(tokenData);
-
+console.log(token)
     res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -35,7 +36,7 @@ router.get(
     });
 
     // Redirect to frontend with user info in query params
-    res.redirect(`http://localhost:3000/user?uName=${encodeURIComponent(req.user.username)}&email=${encodeURIComponent(req.user.email)}&uid=${encodeURIComponent(req.user.id)}`);
+    res.redirect(`http://localhost:3000/user?uName=${encodeURIComponent(req.user.username)}&email=${encodeURIComponent(req.user.email)}`);
   }
 );
 

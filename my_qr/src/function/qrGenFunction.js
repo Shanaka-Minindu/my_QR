@@ -1,16 +1,16 @@
-export const qrFunction = async (link,uid) => {
+export const qrFunction = async (link) => {
   const data = {
     redirect_url: link,
-    uid
+   
   };
 
   try {
-    const response = await fetch("http://localhost:3001/api/qrurl", {
+    const response = await fetch("http://localhost:3001/api/qrurlwithauth", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      
+      credentials: "include",
       body: JSON.stringify(data),
     });
 

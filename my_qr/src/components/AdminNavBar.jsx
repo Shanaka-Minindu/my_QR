@@ -5,7 +5,7 @@ import { useAuth } from "../store/user_auth_context";
 const AdminNavbar = () => {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
-  const { user, logout } = useAuth();
+  const { admin, logout } = useAuth();
 
   const userLogout = async () => {
     try {
@@ -28,7 +28,7 @@ const AdminNavbar = () => {
       throw err;
     }
     
-    logout();
+    logout("admin");
     navigate('/');
   };
 
@@ -54,7 +54,7 @@ const AdminNavbar = () => {
         </Link>
 
         <div className="flex space-x-3 md:order-2 md:space-x-0 rtl:space-x-reverse">
-          {user ? (
+          {admin ? (
             <div className="flex items-center space-x-4">
               <div
                 className="flex items-center space-x-2"
@@ -63,7 +63,7 @@ const AdminNavbar = () => {
                 }}
               >
                 <span className="hidden text-sm font-medium text-gray-900 md:block">
-                  {user.uName}
+                  {admin.uName}
                 </span>
                 <button
                   type="button"
@@ -74,7 +74,7 @@ const AdminNavbar = () => {
                   <img
                     className="w-8 h-8 rounded-full"
                     src={
-                      user.avatar ||
+                      admin.avatar ||
                       "https://cdn-icons-png.flaticon.com/512/260/260253.png"
                     }
                     alt="User profile"
@@ -90,7 +90,7 @@ const AdminNavbar = () => {
             </div>
           ) : (
             <NavLink
-              to="/login"
+              to="/adminlog"
               className="px-4 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300"
             >
               Login

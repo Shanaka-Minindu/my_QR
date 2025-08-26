@@ -4,7 +4,8 @@ import NavBar from "./components/NavBar";
 import QrMainContainer from "./components/QrMainContainer";
 import QRFrame from "./components/QrFrame";
 import Footer from "./components/Footer";
-
+import ProtectedRoute from "./function/ProtectedRoute";
+import AdminProtectedRoute from "./function/AdminProtectedRoute";
 import Login from "./components/login";
 import Register from "./components/Register";
 import UserProfile from "./components/UserProfile";
@@ -48,16 +49,53 @@ function App() {
           <Route path="/qrFrame" element={<QRFrame />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/user" element={<UserProfile />} />
+
+          <Route
+            path="/user"
+            element={
+              <ProtectedRoute>
+                <UserProfile />
+              </ProtectedRoute>
+            }
+          />
+
           <Route path="/contactus" element={<ContactUs />} />
           <Route path="/pricing" element={<Priceing />} />
         </Route>
 
         <Route element={<AdminNavAndFooter />}>
-          <Route path="/adminqrdata" element={<AdminQrData />} />
-          <Route path="/adminuserinfo" element={<AdminUsersInfo/>} />
-          <Route path="/adminpaylog" element={<AdminPayLog/>} />
-          <Route path="/auditlogs" element={<AuditLogs/>}/>
+          <Route
+            path="/adminqrdata"
+            element={
+              <AdminProtectedRoute>
+                <AdminQrData />
+              </AdminProtectedRoute>
+            }
+          />
+          <Route
+            path="/adminuserinfo"
+            element={
+              <AdminProtectedRoute>
+                <AdminUsersInfo />
+              </AdminProtectedRoute>
+            }
+          />
+          <Route
+            path="/adminpaylog"
+            element={
+              <AdminProtectedRoute>
+                <AdminPayLog />
+              </AdminProtectedRoute>
+            }
+          />
+          <Route
+            path="/auditlogs"
+            element={
+              <AdminProtectedRoute>
+                <AuditLogs />
+              </AdminProtectedRoute>
+            }
+          />
         </Route>
 
         <Route path="/adminlog" element={<AdminLogin />} />

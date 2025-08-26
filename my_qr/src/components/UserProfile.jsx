@@ -39,9 +39,12 @@ const UserProfile = () => {
     const params = new URLSearchParams(window.location.search);
     const uName = params.get("uName");
     const email = params.get("email");
-    const userId = params.get("uid");
-    if (uName && email && userId) {
-      localStorage.setItem("user", JSON.stringify({ uName, email, userId }));
+   // const userId = params.get("uid");
+
+   
+    if (uName && email) {
+      //localStorage.setItem("user", JSON.stringify({ uName, email }));
+      login({ uName, email },"user")
     } else {
     }
   }, []);

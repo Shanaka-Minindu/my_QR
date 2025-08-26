@@ -49,10 +49,9 @@ const AdminLogin = () => {
 
       const data = await response.json();
       console.log("Login success:", data);
-      login(data);
+      login(data, "admin");
 
       navigate("/adminqrdata");
-      
     } catch (error) {
       console.error("Login error:", error);
       setErrors({
@@ -64,8 +63,6 @@ const AdminLogin = () => {
       setIsLoading(false);
     }
   };
-
-  
 
   return (
     <div className="flex items-center justify-center min-h-screen p-4 bg-gradient-to-br from-gray-50 to-blue-50">
@@ -79,8 +76,6 @@ const AdminLogin = () => {
         </div>
 
         <div className="p-8 space-y-6">
-         
-
           <form onSubmit={handleSubmit} className="space-y-6">
             {errors.form && (
               <div className="p-4 border-l-4 border-red-500 rounded-lg bg-red-50">
@@ -125,7 +120,6 @@ const AdminLogin = () => {
                   placeholder="••••••••"
                   required
                 />
-               
               </div>
 
               <div className="flex items-center">
@@ -181,8 +175,6 @@ const AdminLogin = () => {
             </button>
           </form>
         </div>
-
-       
       </div>
     </div>
   );

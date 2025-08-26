@@ -32,7 +32,7 @@ router.get("/", (req, res) => {
 });
 
 router.get("/shanaka", auth, userDetails);
-router.post("/qrurl", QrUrlCreate);
+
 router.get("/autoRedirect/:qid", FindRedirectUrl);
 router.post("/qrurlwithauth", auth, QrUrlCreate);
 router.patch("/userupdare", auth, updateUser);

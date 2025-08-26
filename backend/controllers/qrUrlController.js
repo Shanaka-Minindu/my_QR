@@ -1,17 +1,13 @@
 import db from "../config/db.js";
 
 export const QrUrlCreate = async (req, res) => {
+  
   console.log(req.body.redirect_url);
-  console.log(req.body.uid);
+  console.log(req.user.userId);
 
   const redirect_url = req.body.redirect_url;
-  var uid = null;
+  var uid = req.user.userId;
 
-  if (req.user) {
-    uid = req.user.userId;
-  } else {
-    uid = req.body.uid;
-  }
 
   if(!uid || !redirect_url){
     return res.status(400).json({ error: "Login error" });
