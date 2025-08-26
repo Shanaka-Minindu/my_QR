@@ -55,3 +55,23 @@ CREATE TABLE admin_user(
   hash_password TEXT NOT NULL,
   created_at TIMESTAMP DEFAULT NOW()
 );
+
+
+ALTER TABLE qr_data ADD COLUMN updated_at TIMESTAMP DEFAULT NOW();
+
+CREATE TABLE qr_data_audit (
+    id SERIAL PRIMARY KEY,
+    qr_id INTEGER NOT NULL REFERENCES qr_data(id),
+    old_scan_count INTEGER,
+    new_scan_count INTEGER,
+    old_package_type VARCHAR(50),
+    new_package_type VARCHAR(50),
+    changed_by VARCHAR(100),
+    change_date TIMESTAMP DEFAULT NOW(),
+    change_type VARCHAR(10) DEFAULT 'UPDATE'
+);
+
+CREATE INDEX idx_qr_data_user_id ON qr_data(user_id);
+CREATE INDEX idx_qr_data_package_type ON qr_data(package_type);
+CREATE INDEX idx_qr_data_created_date ON qr_data(created_date DESC);
+CREATE INDEX idx_qr_data_audit_qr_id ON qr_data_audit(qr_id);

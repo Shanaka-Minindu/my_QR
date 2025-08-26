@@ -2,7 +2,7 @@ import express from "express";
 import { register, login, logout } from "../controllers/auth.controller.js";
 import passport from "passport";
 import { generateToken } from "../utils/token.util.js";
-import { adminRegister, adminLogin } from "../controllers/adminContoller.js";
+import { adminRegister, adminLogin,adminLogOut } from "../controllers/adminContoller.js";
 
 
 const router = express.Router();
@@ -42,6 +42,6 @@ router.get(
 
 router.post("/adminreg",adminRegister);
 router.post("/adminlog",adminLogin);
-
+router.post("/adminlogout",adminLogOut);
 
 export default router;

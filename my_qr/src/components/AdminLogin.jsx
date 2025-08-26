@@ -51,7 +51,7 @@ const AdminLogin = () => {
       console.log("Login success:", data);
       login(data);
 
-      navigate("/adminuser");
+      navigate("/adminqrdata");
       
     } catch (error) {
       console.error("Login error:", error);
